@@ -35,7 +35,7 @@ print(f"Итого к оплате: {format(total,".2f")}")
 ### Задание номер 4
 ```python
 time = int(input('Минуты: '))
-hour = time // 60
+hour = (time // 60) % 24
 minute = time % 60
 print(f'{hour}:{minute}')
 ```
