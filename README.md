@@ -39,7 +39,7 @@ hour = (time // 60) % 24
 minute = time % 60
 print(f'{hour}:{minute}')
 ```
-![Картинка 4](./image/lab01/04.1.png)
+![Картинка 4](./image/lab01/06.png)
 
 ### Задание номер 5
 ```python
