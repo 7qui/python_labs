@@ -89,7 +89,7 @@ print(flatten([
     [4,5]
 ]))
 ```
-![Картинка 1](./image/lab01/01.02.png)
+![Картинка 1](./image/lab02/01.02.png)
 
 ### Задание номер 2
 ```python
@@ -137,7 +137,7 @@ print(col_sums([
     [4,5,6]
 ]))
 ```
-![Картинка 5](./image/lab01/02.02.png)
+![Картинка 5](./image/lab02/02.02.png)
 
 ### Задание номер 3
 ```python
@@ -158,4 +158,4 @@ def format_record(rec: tuple[str, str, float]) -> str:
 
 print(format_record(('    Громов     Гордей        Александрович    ', 'БИВТ-25', 3.49)))
 ```
-![Картинка 4](./image/lab01/03.02.png)
+![Картинка 4](./image/lab02/03.02.png)
