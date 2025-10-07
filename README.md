@@ -48,3 +48,114 @@ print(f'Инициалы: {a[0][0] + a[1][0] + a[2][0]}.')
 print(f'Длина (симоволов): {len(a[0]) + len(a[1]) + len(a[2]) + 2}')
 ```
 ![Картинка 5](./image/lab01/05.png)
+
+# Лабораторная работа 1
+
+### Задание номер 1
+```python
+def min_max(nums: list[float | int]) -> tuple[float | int, float | int]:
+    
+    if len(nums) <= 0:
+        return ValueError
+    return (min(nums),max(nums))
+
+
+def unique_sorted(nums: list[float | int]) -> list[float | int]:
+    
+    nums = sorted(set(nums))
+    return nums
+
+
+def flatten(mat: list[list | tuple]) -> list:
+    
+    true_mat = []
+    for i in mat:
+        if not isinstance(i, (list, tuple)):
+            print("TypeError")
+            return
+        for k in i:
+            if isinstance(k,str):
+                print("TypeError")
+                return 
+            
+    for i in range(len(mat)):
+        for k in mat[i]:
+            true_mat.append(k)
+    return true_mat
+            
+print(flatten([
+    [1,2,3],
+    [],
+    [4,5]
+]))
+```
+![Картинка 1](./image/lab01/01.02.png)
+
+### Задание номер 2
+```python
+def transpose(mat: list[list[float | int]]) -> list[list]:
+    result = []
+    
+    for i in range(len(mat) - 1):
+        if len(mat[i]) < len(mat[i+1]) or (len(mat[i]) > len(mat[i+1])):
+            print('ValueError')
+            return
+    
+    for i in range(len(mat[0])):
+        new_list = []
+        for k in range(len(mat)):
+            new_list.append(mat[k][i])
+        result.append(new_list)
+    
+    return result
+
+def row_sums(mat: list[list[float | int]]) -> list[float]:
+    
+    sum_list = []
+    
+    for i in range(len(mat)):
+        summ = 0
+        for k in (mat[i]):
+            summ += k
+        sum_list.append(summ)
+    return sum_list
+
+def col_sums(mat: list[list[float | int]]) -> list[float]:
+
+    sum_list = []
+
+    for i in range(len(mat[0])):
+        summ = 0
+        for k in range(len(mat)):
+            summ += mat[k][i]
+        sum_list.append(summ)
+    
+    return sum_list
+
+print(col_sums([
+    [1,2,3],
+    [4,5,6]
+]))
+```
+![Картинка 5](./image/lab01/02.02.png)
+
+### Задание номер 3
+```python
+def format_record(rec: tuple[str, str, float]) -> str:
+    fio_clean = rec[0].strip()
+    while "  " in fio_clean:
+        fio_clean = fio_clean.replace('  ', ' ')
+    FIO = fio_clean.split()
+
+    if len(FIO) == 3:
+
+        return f"{FIO[0]} {FIO[1][0]}.{FIO[2][0]}., гр. {rec[1]}, GPA {round(rec[2]):.2f} "
+    elif len(FIO) == 2:
+        return f"{FIO[0]} {FIO[1][0]}., гр. {rec[1]}, GPA {round(rec[2]):.2f}"
+    else:
+        return ('ValueError')
+
+
+print(format_record(('    Громов     Гордей        Александрович    ', 'БИВТ-25', 3.49)))
+```
+![Картинка 4](./image/lab01/03.02.png)
