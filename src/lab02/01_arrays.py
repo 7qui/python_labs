@@ -1,33 +1,17 @@
 def min_max(nums: list[float | int]) -> tuple[float | int, float | int]:
-    if len(nums) <= 0:
-        return ValueError
+    if not nums:
+        raise ValueError("Список не может быть пустым")
     return (min(nums), max(nums))
 
-
 def unique_sorted(nums: list[float | int]) -> list[float | int]:
-    nums = sorted(set(nums))
-    return nums
-
+    return sorted(set(nums))
 
 def flatten(mat: list[list | tuple]) -> list:
-    true_mat = []
-    for i in mat:
-        if not isinstance(i, (list, tuple)):
-            print("TypeError")
-            return
-        for k in i:
-            if isinstance(k, str):
-                print("TypeError")
-                return
+    result = []
+    for item in mat:
+        if not isinstance(item, (list, tuple)):
+            raise TypeError(f"Элемент должен быть списком или кортежем, получен {type(item)}")
+        result.extend(item)
+    return result
 
-    for i in range(len(mat)):
-        for k in mat[i]:
-            true_mat.append(k)
-    return true_mat
-
-
-print(flatten([
-    [1, 2, 3],
-    [],
-    [4, 5]
-]))
+print(flatten([[1, 2, 3], [], [4, 5]]))
