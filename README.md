@@ -72,6 +72,8 @@ def flatten(mat: list[list | tuple]) -> list:
 print(flatten([[1, 2, 3], [], [4, 5]]))
 ```
 ![Картинка 1](./image/lab02/01.02.png)
+![Картинка 1](./image/lab02/01.02.02.png)
+![Картинка 1](./image/lab02/01.02.03.png)
 
 ### Задание номер 2
 ```python
