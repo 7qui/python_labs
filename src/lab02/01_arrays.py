@@ -14,4 +14,4 @@ def flatten(mat: list[list | tuple]) -> list:
         result.extend(item)
     return result
 
-print(flatten([[1, 2, 3], [], [4, 5]]))
+print(min_max([3, 1, 2, 1, 3]))
