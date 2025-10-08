@@ -38,7 +38,4 @@ def col_sums(mat: list[list[float | int]]) -> list[float]:
     return sum_list
 
 
-print(col_sums([
-    [1, 2, 3],
-    [4, 5, 6]
-]))
+print(row_sums([[1, 2, 3], [4, 5, 6]]))
