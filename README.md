@@ -53,23 +53,23 @@ print(f'Длина (симоволов): {len(a[0]) + len(a[1]) + len(a[2]) + 2}
 
 ### Задание номер 1
 ```python
-def min_max(nums: list[float | int]) -> tuple[float | int, float | int]:
-    if not nums:
+def min_max(a):
+    if not a:
         raise ValueError("Список не может быть пустым")
-    return (min(nums), max(nums))
+    return (min(a), max(a))
 
-def unique_sorted(nums: list[float | int]) -> list[float | int]:
-    return sorted(set(nums))
+def unique_sorted(a):
+    return sorted(set(a))
 
-def flatten(mat: list[list | tuple]) -> list:
+def flatten(a):
     result = []
-    for item in mat:
+    for item in a:
         if not isinstance(item, (list, tuple)):
             raise TypeError(f"Элемент должен быть списком или кортежем, получен {type(item)}")
         result.extend(item)
     return result
 
-print(flatten([[1, 2, 3], [], [4, 5]]))
+print(min_max([3, 1, 2, 1, 3]))
 ```
 ![Картинка 1](./image/lab02/01.02.png)
 ![Картинка 1](./image/lab02/01.02.02.png)
@@ -77,49 +77,45 @@ print(flatten([[1, 2, 3], [], [4, 5]]))
 
 ### Задание номер 2
 ```python
-def transpose(mat: list[list[float | int]]) -> list[list]:
+def transpose(a):
     result = []
-    
-    for i in range(len(mat) - 1):
-        if len(mat[i]) < len(mat[i+1]) or (len(mat[i]) > len(mat[i+1])):
+
+    for i in range(len(a) - 1):
+        if len(a[i]) < len(a[i + 1]) or (len(a[i]) > len(a[i + 1])):
             print('ValueError')
-            return
     
-    for i in range(len(mat[0])):
+    for i in range(len(a[0])):
         new_list = []
-        for k in range(len(mat)):
-            new_list.append(mat[k][i])
+        for k in range(len(a)):
+            new_list.append(a[k][i])
         result.append(new_list)
-    
+
     return result
 
-def row_sums(mat: list[list[float | int]]) -> list[float]:
-    
+def row_sums(a):
     sum_list = []
-    
-    for i in range(len(mat)):
+
+    for i in range(len(a)):
         summ = 0
-        for k in (mat[i]):
+        for k in (a[i]):
             summ += k
         sum_list.append(summ)
     return sum_list
 
-def col_sums(mat: list[list[float | int]]) -> list[float]:
 
+def col_sums(a):
     sum_list = []
 
-    for i in range(len(mat[0])):
+    for i in range(len(a[0])):
         summ = 0
-        for k in range(len(mat)):
-            summ += mat[k][i]
+        for k in range(len(a)):
+            summ += a[k][i]
         sum_list.append(summ)
-    
+
     return sum_list
 
-print(col_sums([
-    [1,2,3],
-    [4,5,6]
-]))
+
+print(row_sums([[1, 2, 3], [4, 5, 6]]))
 ```
 ![Картинка 1](./image/lab02/02.02.png)
 ![Картинка 2](./image/lab02/02.02.02.png)
@@ -127,17 +123,17 @@ print(col_sums([
 
 ### Задание номер 3
 ```python
-def format_record(rec: tuple[str, str, float]) -> str:
-    fio_clean = rec[0].strip()
+def format_record(a):
+    fio_clean = a[0].strip()
     while "  " in fio_clean:
         fio_clean = fio_clean.replace('  ', ' ')
     FIO = fio_clean.split()
 
     if len(FIO) == 3:
 
-        return f"{FIO[0]} {FIO[1][0]}.{FIO[2][0]}., гр. {rec[1]}, GPA {round(rec[2]):.2f} "
+        return f"{FIO[0]} {FIO[1][0]}.{FIO[2][0]}., гр. {a[1]}, GPA {round(a[2]):.2f} "
     elif len(FIO) == 2:
-        return f"{FIO[0]} {FIO[1][0]}., гр. {rec[1]}, GPA {round(rec[2]):.2f}"
+        return f"{FIO[0]} {FIO[1][0]}., гр. {a[1]}, GPA {round(a[2]):.2f}"
     else:
         return ('ValueError')
 
