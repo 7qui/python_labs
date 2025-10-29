@@ -1,14 +1,14 @@
-def min_max(nums: list[float | int]) -> tuple[float | int, float | int]:
-    if not nums:
+def min_max(a):
+    if not a:
         raise ValueError("Список не может быть пустым")
-    return (min(nums), max(nums))
+    return (min(a), max(a))
 
-def unique_sorted(nums: list[float | int]) -> list[float | int]:
-    return sorted(set(nums))
+def unique_sorted(a):
+    return sorted(set(a))
 
-def flatten(mat: list[list | tuple]) -> list:
+def flatten(a):
     result = []
-    for item in mat:
+    for item in a:
         if not isinstance(item, (list, tuple)):
             raise TypeError(f"Элемент должен быть списком или кортежем, получен {type(item)}")
         result.extend(item)
