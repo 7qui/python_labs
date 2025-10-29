@@ -20,3 +20,6 @@ print("Топ-5:")
 for word, count in top:
     print(f"{word}: {count}")
 
+
+
+

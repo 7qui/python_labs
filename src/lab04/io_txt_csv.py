@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Iterable, Sequence
 
 
-def read_text(path: str | Path, encording: str = "utf-8") -> str:
+def read_text(path: str | Path, encording: str = "cp1251") -> str:
     p = Path(path)
 
     if p.exists() == False:
