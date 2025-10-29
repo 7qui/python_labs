@@ -141,3 +141,125 @@ def format_record(a):
 print(format_record(('    Громов     Гордей        Александрович    ', 'БИВТ-25', 3.49)))
 ```
 ![Картинка 4](./image/lab02/03.02.png)
+
+# Лабораторная работа 3
+### Задание A
+
+```python
+from src.lib.text import *
+
+print(normalize("ПрИвЕт\nМИр\t"))
+print(normalize("ёжик, Ёлка", yo2e=True))
+print(normalize("Hello\r\nWorld"))
+print(normalize("  двойные   пробелы  "))
+
+print(tokenize("привет мир"))
+print(tokenize("hello,world!!!"))
+print(tokenize("по-настоящему круто"))
+print(tokenize("2025 год"))
+print(tokenize("emoji 😀 не слово"))
+
+print(top_n(count_freq(["a", "b", "a", "c", "b", "a"]), n=2))
+print(top_n(count_freq(["bb", "aa", "bb", "aa", "cc"]), n=2))
+```
+```python
+import sys
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+from src.lib.text import*
+
+text = sys.stdin.read()
+
+textn = text
+
+text = normalize(text)
+text = tokenize(text)
+textn = text
+top = top_n(count_freq(text), n = 5)
+text = top_n(count_freq(text))
+
+
+print(f"Всего слов: {len(textn)}")
+print(f"Уникальных слов: {len(text)}")
+print("Топ-5:")
+for word, count in top:
+    print(f"{word}: {count}")
+```
+![Картинка 1](./image/lab03/a.png)
+![Картинка 2](./image/lab03/b.png)
+
+# Лабораторная работа 4
+### Задание A
+
+```python
+import csv
+from pathlib import Path
+from typing import Iterable, Sequence
+
+
+def read_text(path: str | Path, encording: str = "cp1251") -> str:
+    p = Path(path)
+
+    if p.exists() == False:
+        raise FileNotFoundError
+
+    if len(p.read_text(encoding=encording)) <= 0:
+        return ''
+
+    return p.read_text(encoding=encording)
+
+
+def write_csv(rows: Iterable[Sequence], path: str | Path, header: tuple[str, ...] | None = None) -> None:
+    p = Path(path)
+    rows = list(rows)
+
+    for i in range(len(rows) - 1):
+
+        if len(rows[i]) != len(rows[i + 1]):
+            raise ValueError
+
+    with p.open("w", newline="", encoding="utf-8") as f:
+        w = csv.writer(f)
+
+        if header is not None:
+            w.writerow(header)
+
+        for r in rows:
+            w.writerow(r)
+
+```
+```python
+from src.lab04.io_txt_csv import *
+from src.lib.text import *
+
+b = read_text("/Users/grom61/PycharmProjects/python_labs/data/input.txt")
+b = normalize(b)
+b = tokenize(b)
+b_ = b
+b = count_freq(b)
+top = top_n(b,5)
+b = top_n(b)
+
+
+write_csv(
+    rows = b,
+    path = "/Users/grom61/PycharmProjects/python_labs/data/report.csv",
+    header=["Word","Count"]
+)
+
+print(f"Всего слов: {len(b_)}")
+print(f"Уникальных слов: {len(b)}")
+print("Топ-5:")
+for word, count in top:
+    print(f"{word}: {count}")
+```
+![Картинка 1](./image/lab03/11.png)
+![Картинка 2](./image/lab03/12.png)
+![Картинка 3](./image/lab03/13.png)
+![Картинка 4](./image/lab03/21.png)
+![Картинка 5](./image/lab03/22.png)
+![Картинка 6](./image/lab03/23.png)
+![Картинка 7](./image/lab03/31.png)
+![Картинка 8](./image/lab03/32.png)
+![Картинка 9](./image/lab03/33.png)
+
