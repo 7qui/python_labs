@@ -803,3 +803,371 @@ def students_from_json(path: str | Path) -> List[Student]:
 ```
 ![Картинка 1](./image/lab08/81.png)
 ![Картинка 2](./image/lab08/82.png)
+
+# Лабораторная работа 9
+### Задания А
+```python
+from __future__ import annotations
+
+import csv
+from pathlib import Path
+from typing import List
+
+from src.lab08.models import Student
+
+
+CSV_FIELDS = ["fio", "birthdate", "group", "gpa"]
+
+
+class Group:
+    def __init__(self, storage_path: str):
+        self.path = Path(storage_path)
+        self._ensure_storage_exists()
+
+    def _ensure_storage_exists(self) -> None:
+        """
+        Создаёт файл с заголовком, если его нет.
+        """
+        if not self.path.exists():
+            self.path.parent.mkdir(parents=True, exist_ok=True)
+            with self.path.open("w", encoding="utf-8", newline="") as f:
+                writer = csv.DictWriter(f, fieldnames=CSV_FIELDS)
+                writer.writeheader()
+
+    def _read_all_rows(self) -> List[dict]:
+        """
+        Читает все строки CSV и возвращает список словарей.
+        """
+        self._ensure_storage_exists()
+        with self.path.open("r", encoding="utf-8", newline="") as f:
+            reader = csv.DictReader(f)
+            if reader.fieldnames != CSV_FIELDS:
+                raise ValueError(
+                    f"Invalid CSV header: {reader.fieldnames}, expected {CSV_FIELDS}"
+                )
+            rows = list(reader)
+        return rows
+
+    def _write_all_rows(self, rows: List[dict]) -> None:
+        """
+        Перезаписывает CSV указанным списком словарей.
+        """
+        with self.path.open("w", encoding="utf-8", newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=CSV_FIELDS)
+            writer.writeheader()
+            writer.writerows(rows)
+
+    def list(self) -> List[Student]:
+        """
+        Вернуть всех студентов как список Student.
+        """
+        rows = self._read_all_rows()
+        students: List[Student] = []
+        for r in rows:
+            # валидация за нас делает Student.__post_init__
+            students.append(
+                Student(
+                    fio=r["fio"],
+                    birthdate=r["birthdate"],
+                    group=r["group"],
+                    gpa=float(r["gpa"]),
+                )
+            )
+        return students
+
+    def add(self, student: Student) -> None:
+        """
+        Добавить нового студента в CSV.
+        """
+        rows = self._read_all_rows()
+        rows.append(student.to_dict())
+        self._write_all_rows(rows)
+
+    def find(self, substr: str) -> List[Student]:
+        """
+        Найти студентов, у которых substr входит в fio (без учёта регистра).
+        """
+        substr_lower = substr.lower()
+        result: List[Student] = []
+        for s in self.list():
+            if substr_lower in s.fio.lower():
+                result.append(s)
+        return result
+
+    def remove(self, fio: str) -> int:
+        """
+        Удалить всех студентов с точным совпадением fio.
+        Возвращает количество удалённых записей.
+        """
+        rows = self._read_all_rows()
+        new_rows: List[dict] = []
+        removed = 0
+        for r in rows:
+            if r["fio"] == fio:
+                removed += 1
+            else:
+                new_rows.append(r)
+        self._write_all_rows(new_rows)
+        return removed
+
+    def update(self, fio: str, **fields) -> int:
+        """
+        Обновить поля студента(ов) с данным fio.
+        Допустимые поля: fio, birthdate, group, gpa.
+        Возвращает количество обновлённых записей.
+        """
+        allowed = set(CSV_FIELDS)
+        for key in fields:
+            if key not in allowed:
+                raise ValueError(f"Unknown field: {key}")
+
+        rows = self._read_all_rows()
+        updated = 0
+        for r in rows:
+            if r["fio"] == fio:
+                for key, value in fields.items():
+                    r[key] = str(value)
+                # проверим, что стало валидным Student
+                _ = Student(
+                    fio=r["fio"],
+                    birthdate=r["birthdate"],
+                    group=r["group"],
+                    gpa=float(r["gpa"]),
+                )
+                updated += 1
+
+        self._write_all_rows(rows)
+        return updated
+
+    def stats(self) -> dict:
+        """
+        ★ Доп. задание: статистика по группе.
+        """
+        students = self.list()
+        if not students:
+            return {
+                "count": 0,
+                "min_gpa": None,
+                "max_gpa": None,
+                "avg_gpa": None,
+                "groups": {},
+                "top_5_students": [],
+            }
+
+        gpas = [s.gpa for s in students]
+        groups_count: dict[str, int] = {}
+        for s in students:
+            groups_count[s.group] = groups_count.get(s.group, 0) + 1
+
+        top_5 = sorted(students, key=lambda s: s.gpa, reverse=True)[:5]
+        top_5_data = [{"fio": s.fio, "gpa": s.gpa} for s in top_5]
+
+        return {
+            "count": len(students),
+            "min_gpa": min(gpas),
+            "max_gpa": max(gpas),
+            "avg_gpa": sum(gpas) / len(gpas),
+            "groups": groups_count,
+            "top_5_students": top_5_data,
+        }
+```
+![Картинка 1](./image/lab09/91.png)
+![Картинка 2](./image/lab09/92.png)
+
+# Лабораторная работа 10
+### Задания А
+```python
+from collections import deque
+from typing import Any
+
+
+class Stack:
+    def __init__(self) -> None:
+        self._data: list[Any] = []
+
+    def push(self, item: Any) -> None:
+        self._data.append(item)
+
+    def pop(self) -> Any:
+        if self.is_empty():
+            raise IndexError("pop from empty Stack")
+        return self._data.pop()
+
+    def peek(self) -> Any | None:
+        if self.is_empty():
+            return None
+        return self._data[-1]
+
+    def is_empty(self) -> bool:
+        return len(self._data) == 0
+
+    def __len__(self) -> int:
+        return len(self._data)
+
+    def __repr__(self) -> str:
+        return f"Stack({self._data!r})"
+
+
+class Queue:
+    def __init__(self) -> None:
+        self._data: deque[Any] = deque()
+
+    def enqueue(self, item: Any) -> None:
+        self._data.append(item)
+
+    def dequeue(self) -> Any:
+        if self.is_empty():
+            raise IndexError("dequeue from empty Queue")
+        return self._data.popleft()
+
+    def peek(self) -> Any | None:
+        if self.is_empty():
+            return None
+        return self._data[0]
+
+    def is_empty(self) -> bool:
+        return len(self._data) == 0
+
+    def __len__(self) -> int:
+        return len(self._data)
+
+    def __repr__(self) -> str:
+        return f"Queue({list(self._data)!r})"
+
+
+if __name__ == "__main__":
+    # демо для скриншотов
+    s = Stack()
+    s.push(1)
+    s.push(2)
+    print("Stack:", s)
+    print("pop:", s.pop())
+    print("peek:", s.peek())
+
+    q = Queue()
+    q.enqueue("a")
+    q.enqueue("b")
+    print("Queue:", q)
+    print("dequeue:", q.dequeue())
+    print("peek:", q.peek())
+```
+![Картинка 1](./image/lab10/1001.png)
+![Картинка 2](./image/lab10/1002.png)
+
+### Задания B
+```python
+from typing import Any, Iterator
+
+
+class Node:
+    def __init__(self, value: Any, next: "Node | None" = None) -> None:
+        self.value = value
+        self.next = next
+
+    def __repr__(self) -> str:
+        return f"Node({self.value!r})"
+
+
+class SinglyLinkedList:
+    def __init__(self) -> None:
+        self.head: Node | None = None
+        self.tail: Node | None = None
+        self._size: int = 0
+
+    def append(self, value: Any) -> None:
+        new_node = Node(value)
+        if self.head is None:
+            self.head = self.tail = new_node
+        else:
+            assert self.tail is not None
+            self.tail.next = new_node
+            self.tail = new_node
+        self._size += 1
+
+    def prepend(self, value: Any) -> None:
+        new_node = Node(value, self.head)
+        self.head = new_node
+        if self.tail is None:
+            self.tail = new_node
+        self._size += 1
+
+    def insert(self, idx: int, value: Any) -> None:
+        if idx < 0 or idx > self._size:
+            raise IndexError("index out of range")
+
+        if idx == 0:
+            self.prepend(value)
+            return
+        if idx == self._size:
+            self.append(value)
+            return
+
+        prev = self.head
+        for _ in range(idx - 1):
+            assert prev is not None
+            prev = prev.next
+
+        new_node = Node(value, prev.next)  # type: ignore[arg-type]
+        prev.next = new_node               # type: ignore[assignment]
+        self._size += 1
+
+    def remove_at(self, idx: int) -> None:
+        if idx < 0 or idx >= self._size:
+            raise IndexError("index out of range")
+
+        if idx == 0:
+            assert self.head is not None
+            self.head = self.head.next
+            if self.head is None:
+                self.tail = None
+            self._size -= 1
+            return
+
+        prev = self.head
+        for _ in range(idx - 1):
+            assert prev is not None
+            prev = prev.next
+
+        assert prev is not None and prev.next is not None
+        to_delete = prev.next
+        prev.next = to_delete.next
+        if to_delete is self.tail:
+            self.tail = prev
+        self._size -= 1
+
+    def __iter__(self) -> Iterator[Any]:
+        current = self.head
+        while current is not None:
+            yield current.value
+            current = current.next
+
+    def __len__(self) -> int:
+        return self._size
+
+    def __repr__(self) -> str:
+        values = ", ".join(repr(v) for v in self)
+        return f"SinglyLinkedList([{values}])"
+
+    def pretty(self) -> str:
+        parts: list[str] = []
+        current = self.head
+        while current is not None:
+            parts.append(f"[{current.value}]")
+            current = current.next
+        parts.append("None")
+        return " -> ".join(parts)
+
+
+if __name__ == "__main__":
+    # демо для скриншотов
+    lst = SinglyLinkedList()
+    lst.append(1)
+    lst.append(2)
+    lst.prepend(0)
+    lst.insert(2, 1.5)
+    print(lst)           # SinglyLinkedList([0, 1, 1.5, 2])
+    print(lst.pretty())  # [0] -> [1] -> [1.5] -> [2] -> None
+    lst.remove_at(1)
+    print(lst.pretty())
+```
+![Картинка 1](./image/lab10/1003.png)
