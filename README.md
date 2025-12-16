@@ -633,3 +633,173 @@ def test_csv_to_json_missing_file_raises():
     with pytest.raises(FileNotFoundError):
         csv_to_json("nope.csv", "out.json")
 ```
+![Картинка 1](./image/lab07/71.png)
+![Картинка 2](./image/lab07/72.png)
+
+# Лабораторная работа 8
+### Задания А
+```python
+from __future__ import annotations
+
+from dataclasses import dataclass
+from datetime import datetime, date
+from typing import Any, Dict
+
+
+@dataclass
+class Student:
+    fio: str          # ФИО студента
+    birthdate: str    # формат YYYY-MM-DD
+    group: str        # например, SE-01
+    gpa: float        # 0.0–5.0
+
+    def __post_init__(self) -> None:
+        # Валидация даты
+        try:
+            datetime.strptime(self.birthdate, "%Y-%m-%d")
+        except ValueError:
+            raise ValueError(
+                f"birthdate must be in format YYYY-MM-DD, got: {self.birthdate}"
+            )
+
+        # Валидация gpa
+        if not (0.0 <= float(self.gpa) <= 5.0):
+            raise ValueError("gpa must be between 0 and 5")
+
+        self.gpa = float(self.gpa)
+
+    def age(self) -> int:
+        """Вернуть количество полных лет."""
+        b = datetime.strptime(self.birthdate, "%Y-%m-%d").date()
+        today = date.today()
+        years = today.year - b.year
+        if (today.month, today.day) < (b.month, b.day):
+            years -= 1
+        return years
+
+    def to_dict(self) -> Dict[str, Any]:
+        """Сериализация в словарь."""
+        return {
+            "fio": self.fio,
+            "birthdate": self.birthdate,
+            "group": self.group,
+            "gpa": self.gpa,
+        }
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> "Student":
+        """Десериализация из словаря."""
+        return cls(
+            fio=data["fio"],
+            birthdate=data["birthdate"],
+            group=data["group"],
+            gpa=data["gpa"],
+        )
+
+    def __str__(self) -> str:
+        """Красивый вывод."""
+        return f"{self.fio} ({self.group}), GPA: {self.gpa}, возраст: {self.age()} лет"
+from __future__ import annotations
+
+from dataclasses import dataclass
+from datetime import datetime, date
+from typing import Any, Dict
+
+
+@dataclass
+class Student:
+    fio: str          # ФИО студента
+    birthdate: str    # формат YYYY-MM-DD
+    group: str        # например, SE-01
+    gpa: float        # 0.0–5.0
+
+    def __post_init__(self) -> None:
+        # Валидация даты
+        try:
+            datetime.strptime(self.birthdate, "%Y-%m-%d")
+        except ValueError:
+            raise ValueError(
+                f"birthdate must be in format YYYY-MM-DD, got: {self.birthdate}"
+            )
+
+        # Валидация gpa
+        if not (0.0 <= float(self.gpa) <= 5.0):
+            raise ValueError("gpa must be between 0 and 5")
+
+        self.gpa = float(self.gpa)
+
+    def age(self) -> int:
+        """Вернуть количество полных лет."""
+        b = datetime.strptime(self.birthdate, "%Y-%m-%d").date()
+        today = date.today()
+        years = today.year - b.year
+        if (today.month, today.day) < (b.month, b.day):
+            years -= 1
+        return years
+
+    def to_dict(self) -> Dict[str, Any]:
+        """Сериализация в словарь."""
+        return {
+            "fio": self.fio,
+            "birthdate": self.birthdate,
+            "group": self.group,
+            "gpa": self.gpa,
+        }
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> "Student":
+        """Десериализация из словаря."""
+        return cls(
+            fio=data["fio"],
+            birthdate=data["birthdate"],
+            group=data["group"],
+            gpa=data["gpa"],
+        )
+
+    def __str__(self) -> str:
+        """Красивый вывод."""
+        return f"{self.fio} ({self.group}), GPA: {self.gpa}, возраст: {self.age()} лет"
+```
+### Задания B
+```python
+from __future__ import annotations
+
+import json
+from pathlib import Path
+from typing import List
+
+from .models import Student
+
+
+def students_to_json(students: List[Student], path: str | Path) -> None:
+    """
+    Сохраняет список студентов в JSON-файл по указанному пути.
+    """
+    path = Path(path)
+    data = [s.to_dict() for s in students]
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+
+
+def students_from_json(path: str | Path) -> List[Student]:
+    """
+    Читает JSON-массив, валидирует и возвращает список Student.
+    """
+    path = Path(path)
+    with path.open("r", encoding="utf-8") as f:
+        raw = json.load(f)
+
+    if not isinstance(raw, list):
+        raise ValueError("JSON must contain a list of students objects")
+
+    students: List[Student] = []
+    for item in raw:
+        if not isinstance(item, dict):
+            raise ValueError("Each student entry must be a JSON object")
+        students.append(Student.from_dict(item))
+
+    return students
+```
+![Картинка 1](./image/lab08/81.png)
+![Картинка 2](./image/lab08/82.png)
